@@ -4,16 +4,20 @@ import html.style.Style;
 import html.table.Table;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import pdf.PdfBuilder;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
 
 public class Example {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Document page = Jsoup.parse("<html><head></head><body></body></html>");
         page.head().appendElement("title").text("Example page");
 
         Style style = new Style();
         style.select("h1").property("text-color", "red");
-        style.select("table, table > tr > td")
+        style.select("table, th, td")
                 .property("border-width", "1px")
                 .property("border-collapse", "collapse");
 
@@ -31,5 +35,9 @@ public class Example {
                 .tr().td().text("3").parent().td("C").tds("c");
 
         System.out.println(page.outerHtml());
+
+        PdfBuilder builder = new PdfBuilder(new File("./example.pdf"));
+        builder.nextPage(PdfBuilder.PORTRAIT, new ByteArrayInputStream(page.outerHtml().getBytes()));
+        builder.close();
     }
 }
